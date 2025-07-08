@@ -4,7 +4,7 @@ ARG GRADLE_VERSION=8.10
 
 WORKDIR /app
 
-COPY . .
+COPY app/ .
 
 RUN ./gradlew installDist
 
