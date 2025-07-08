@@ -7,7 +7,12 @@ import org.slf4j.LoggerFactory;
 public class App {
     public static void main(String[] args) {
         Javalin app = getApp();
-        app.start(7070);
+        app.start(getPort());
+    }
+
+    private static int getPort() {
+        String port = System.getenv().getOrDefault("PORT", "7070");
+        return Integer.parseInt(port);
     }
 
     public static Javalin getApp() {
