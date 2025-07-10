@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("org.sonarqube") version "6.2.0.5505"
     id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.freefair.lombok") version "8.14"
     checkstyle
     jacoco
     application
@@ -17,6 +18,7 @@ repositories {
 dependencies {
     implementation("io.javalin:javalin:6.7.0")
     implementation("org.slf4j:slf4j-simple:2.0.17")
+    implementation("com.zaxxer:HikariCP:6.3.0")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
