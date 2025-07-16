@@ -35,7 +35,7 @@
 
         <main class="flex-grow-1">
             ${content}
-        </main>>
+        </main>
 
         <footer class="footer border-top py-3 mt-5 bg-light">
             <div class="container-xl">
@@ -45,5 +45,5 @@
                 </div>
             </div>
         </footer>
-    </body>>
+    </body>
 </html>
