@@ -17,28 +17,41 @@ import static io.javalin.rendering.template.TemplateUtil.model;
 
 public class UrlsController {
     public static void create(Context ctx) throws SQLException {
+        String inputUrl = ctx.formParam("url").trim().toLowerCase();
+        URL url;
         try {
-            String inputUrl = ctx.formParam("url").trim().toLowerCase();
             URI uri = new URI(inputUrl);
-            URL url = uri.toURL();
-            String parsedUrl = String.format("%s://%s%s",
-                    url.getProtocol(),
-                    url.getHost(),
-                    url.getPort() == -1 ? "" : ":" + url.getPort()
-            );
-            if (UrlRepository.find(parsedUrl).isEmpty()) {
-                Url newUrl = new Url(parsedUrl);
-                UrlRepository.save(newUrl);
-            }
-            ctx.redirect("/urls");
+            url = uri.toURL();
         } catch (Exception e) {
+            ctx.sessionAttribute("flash", "Некорректный URL");
+            ctx.sessionAttribute("flash-type", "danger");
+            ctx.redirect("/");
+            return;
+        }
+        String parsedUrl = String.format("%s://%s%s",
+                url.getProtocol(),
+                url.getHost(),
+                url.getPort() == -1 ? "" : ":" + url.getPort()
+        );
 
+        if (UrlRepository.find(parsedUrl).isEmpty()) {
+            Url newUrl = new Url(parsedUrl);
+            UrlRepository.save(newUrl);
+            ctx.sessionAttribute("flash", "Страница успешно добавлена");
+            ctx.sessionAttribute("flash-type", "success");
+            ctx.redirect("/urls");
+        } else {
+            ctx.sessionAttribute("flash", "Страница уже существует");
+            ctx.sessionAttribute("flash-type", "info");
+            ctx.redirect("/");
         }
     }
 
     public static void index(Context ctx) throws SQLException {
         List<Url> urls = UrlRepository.getEntities();
         UrlsPage page = new UrlsPage(urls);
+        page.setFlash(ctx.consumeSessionAttribute("flash"));
+        page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
         ctx.render("urls/index.jte", model("page", page));
     }
 

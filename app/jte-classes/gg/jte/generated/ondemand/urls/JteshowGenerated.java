@@ -6,7 +6,7 @@ public final class JteshowGenerated {
 	public static final int[] JTE_LINE_INFO = {0,0,1,1,1,1,3,3,5,5,8,8,8,13,13,13,17,17,17,21,21,21,46,46,46,46,46,1,1,1,1};
 	public static void render(gg.jte.html.HtmlTemplateOutput jteOutput, gg.jte.html.HtmlInterceptor jteHtmlInterceptor, UrlPage page) {
 		jteOutput.writeContent("\n");
-		gg.jte.generated.ondemand.layout.JtepageGenerated.render(jteOutput, jteHtmlInterceptor, new gg.jte.html.HtmlContent() {
+		gg.jte.generated.ondemand.layout.JtepageGenerated.render(jteOutput, jteHtmlInterceptor, null, new gg.jte.html.HtmlContent() {
 			public void writeTo(gg.jte.html.HtmlTemplateOutput jteOutput) {
 				jteOutput.writeContent("\n        <section>\n            <div class=\"container-lg mt-5\">\n                <h1>Сайт: ");
 				jteOutput.setContext("h1", null);

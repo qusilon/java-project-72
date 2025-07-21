@@ -1,4 +1,6 @@
 @import gg.jte.Content
+@import hexlet.code.dto.BasePage
+@param BasePage page = null
 @param Content content
 
 <!doctype html>
@@ -34,6 +36,12 @@
         </nav>
 
         <main class="flex-grow-1">
+            @if(page != null && page.getFlash() != null)
+                <div class="rounded-0 m-0 alert alert-dismissible fade show alert-${page.getFlashType()}" role="alert">
+                    <p class="m-0">${page.getFlash()}</p>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
             ${content}
         </main>
 
