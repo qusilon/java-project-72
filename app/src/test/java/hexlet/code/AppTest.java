@@ -58,11 +58,26 @@ public class AppTest {
 
     @Test
     public void testCreateUrl() {
+        var url = "https://www.example.com";
         JavalinTest.test(app, (server, client) -> {
-            var requestBody = "url=https://www.example.com";
+            var requestBody = "url=" + url;
             var response = client.post("/urls", requestBody);
             assertThat(response.code()).isEqualTo(200);
             assertThat(response.body().string()).contains("https://www.example.com");
+            var urlFromRepo = UrlRepository.find(url).get();
+            assertThat(urlFromRepo.getName()).isEqualTo(url);
+        });
+    }
+
+    @Test
+    public void testCreateInvalidUrl() {
+        var url = "asd";
+        JavalinTest.test(app, (server, client) -> {
+            var requestBody = "url=" + url;
+            var response = client.post("/urls", requestBody);
+            assertThat(response.code()).isEqualTo(200);
+            var urlFromRepo = UrlRepository.find(url);
+            assertThat(urlFromRepo).isEmpty();
         });
     }
 }
