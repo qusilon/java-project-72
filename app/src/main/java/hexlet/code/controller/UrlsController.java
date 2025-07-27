@@ -3,14 +3,21 @@ package hexlet.code.controller;
 import hexlet.code.dto.UrlPage;
 import hexlet.code.dto.UrlsPage;
 import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
 
 import java.net.URI;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import static io.javalin.rendering.template.TemplateUtil.model;
 
@@ -49,7 +56,8 @@ public class UrlsController {
 
     public static void index(Context ctx) throws SQLException {
         List<Url> urls = UrlRepository.getEntities();
-        UrlsPage page = new UrlsPage(urls);
+        Map<Long, UrlCheck> lastChecks = UrlCheckRepository.findLastChecks();
+        UrlsPage page = new UrlsPage(urls, lastChecks);
         page.setFlash(ctx.consumeSessionAttribute("flash"));
         page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
         ctx.render("urls/index.jte", model("page", page));
@@ -58,7 +66,38 @@ public class UrlsController {
     public static void show(Context ctx) throws SQLException {
         var id = ctx.pathParamAsClass("id", Long.class).get();
         var url = UrlRepository.find(id).orElseThrow(() -> new NotFoundResponse("Page not found"));
-        var page = new UrlPage(url);
+        var urlCheck = UrlCheckRepository.find(id);
+        var page = new UrlPage(url, urlCheck);
+        page.setFlash(ctx.consumeSessionAttribute("flash"));
+        page.setFlashType(ctx.consumeSessionAttribute("flash-type"));
         ctx.render("urls/show.jte", model("page", page));
+    }
+
+    public static void check(Context ctx) throws SQLException {
+        var id = ctx.pathParamAsClass("id", Long.class).get();
+        Url url = UrlRepository.find(id).orElseThrow(() -> new NotFoundResponse("Url not found"));
+        try {
+            HttpResponse<String> response = Unirest.get(url.getName()).asString();
+            var doc = Jsoup.parse(response.getBody());
+
+            int statusCode  = response.getStatus();
+            String title = doc.title();
+
+            Element ElemH1 = doc.selectFirst("h1");
+            String h1 = ElemH1 == null ? "" : ElemH1.text();
+
+            Element ElemMeta = doc.selectFirst("meta[name=description]");
+            String meta = ElemMeta == null ? "" : ElemMeta.attr("content");
+
+            UrlCheck urlCheck = new UrlCheck(statusCode, title, h1, meta, id);
+            UrlCheckRepository.save(urlCheck);
+            ctx.sessionAttribute("flash", "Страница успешно проверена");
+            ctx.sessionAttribute("flash-type", "success");
+            ctx.redirect("/urls/" + id);
+        } catch (Exception e) {
+            ctx.sessionAttribute("flash", "Некорректный адрес");
+            ctx.sessionAttribute("flash-type", "danger");
+            ctx.redirect("/urls/" + id);
+        }
     }
 }

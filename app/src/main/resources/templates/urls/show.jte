@@ -2,6 +2,7 @@
 @param UrlPage page
 
 @template.layout.page(
+    page = page,
     content = @`
         <section>
             <div class="container-lg mt-5">
@@ -24,7 +25,7 @@
                 </table>
 
                 <h2 class="mt-5">Проверки</h2>
-                <form method="post" action="/urls/1/checks">
+                <form method="post" action="/urls/${page.getUrl().getId()}/checks">
                     <button type="submit" class="btn btn-primary">Запустить проверку</button>
                 </form>
 
@@ -38,7 +39,16 @@
                         <th class="col-2">Дата проверки</th>
                     </thead>
                     <tbody>
-
+                    @for(var check : page.getUrlChecks())
+                        <tr>
+                            <td>${check.getId()}</td>
+                            <td>${check.getStatusCode()}</td>
+                            <td>${check.getTitle()}</td>
+                            <td>${check.getH1()}</td>
+                            <td>${check.getDescription()}</td>
+                            <td>${check.getCreatedAt().toString()}</td>
+                        </tr>
+                    @endfor
                     </tbody>
                 </table>
             </div>

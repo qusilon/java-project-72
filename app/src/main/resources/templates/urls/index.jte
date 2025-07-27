@@ -27,10 +27,14 @@
                                 <a href="/urls/${url.getId()}">${url.getName()}</a>
                             </td>
                             <td>
-
+                                @if(page.getLastChecks().containsKey(url.getId()))
+                                    ${page.getLastChecks().get(url.getId()).getCreatedAt().toString()}
+                                @endif
                             </td>
                             <td>
-
+                                @if(page.getLastChecks().containsKey(url.getId()))
+                                    ${page.getLastChecks().get(url.getId()).getStatusCode()}
+                                @endif
                             </td>
 
                         </tr>

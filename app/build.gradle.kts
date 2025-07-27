@@ -24,9 +24,13 @@ dependencies {
     implementation("io.javalin:javalin-bundle:6.7.0")
     implementation("org.slf4j:slf4j-simple:2.0.17")
     implementation("com.zaxxer:HikariCP:6.3.0")
+    implementation("com.konghq:unirest-java:3.14.1")
+    implementation("org.jsoup:jsoup:1.21.1")
+
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core:3.27.3")
+    testImplementation("com.squareup.okhttp3:mockwebserver3:5.1.0")
 }
 
 tasks.test {
