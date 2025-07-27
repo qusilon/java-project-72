@@ -83,11 +83,11 @@ public class UrlsController {
             int statusCode  = response.getStatus();
             String title = doc.title();
 
-            Element ElemH1 = doc.selectFirst("h1");
-            String h1 = ElemH1 == null ? "" : ElemH1.text();
+            Element elemH1 = doc.selectFirst("h1");
+            String h1 = elemH1 == null ? "" : elemH1.text();
 
-            Element ElemMeta = doc.selectFirst("meta[name=description]");
-            String meta = ElemMeta == null ? "" : ElemMeta.attr("content");
+            Element elemMeta = doc.selectFirst("meta[name=description]");
+            String meta = elemMeta == null ? "" : elemMeta.attr("content");
 
             UrlCheck urlCheck = new UrlCheck(statusCode, title, h1, meta, id);
             UrlCheckRepository.save(urlCheck);
