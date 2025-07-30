@@ -24,10 +24,10 @@ import java.sql.SQLException;
 
 public class AppTest {
     private static Javalin app;
-    private static MockWebServer server;
+    private static MockWebServer mockServer;
 
     public static String readFixture(String fixtureName) {
-        try (InputStream is = AppTest.class.getClassLoader().getResourceAsStream("fixtures/" + fixtureName)){
+        try (InputStream is = AppTest.class.getClassLoader().getResourceAsStream("fixtures/" + fixtureName)) {
             if (is == null) {
                 throw new FileNotFoundException("Фикстура " + fixtureName + " не найдена.");
             }
@@ -39,18 +39,18 @@ public class AppTest {
 
 
     @BeforeAll
-    public static void beforeAll() throws IOException{
-        server = new MockWebServer();
+    public static void beforeAll() throws IOException {
+        mockServer = new MockWebServer();
         MockResponse response = new MockResponse.Builder()
                 .body(readFixture("index.html"))
                 .build();
-        server.enqueue(response);
-        server.start();
+        mockServer.enqueue(response);
+        mockServer.start();
     }
 
     @AfterAll
     public static void afterAll() {
-        server.close();
+        mockServer.close();
     }
 
     @BeforeEach
@@ -119,8 +119,8 @@ public class AppTest {
     }
 
     @Test
-    public  void testCreateUrlCheck() {
-        String url = server.url("/").toString().replaceAll("/$", "");
+    public void testCreateUrlCheck() {
+        String url = mockServer.url("/").toString().replaceAll("/$", "");
         System.out.println(url);
         JavalinTest.test(app, (server, client) -> {
             var requestBody = "url=" + url;
