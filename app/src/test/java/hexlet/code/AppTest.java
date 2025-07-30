@@ -3,18 +3,55 @@ package hexlet.code;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import hexlet.code.model.Url;
+import hexlet.code.model.UrlCheck;
+import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 public class AppTest {
-    private Javalin app;
+    private static Javalin app;
+    private static MockWebServer server;
+
+    public static String readFixture(String fixtureName) {
+        try (InputStream is = AppTest.class.getClassLoader().getResourceAsStream("fixtures/" + fixtureName)){
+            if (is == null) {
+                throw new FileNotFoundException("Фикстура " + fixtureName + " не найдена.");
+            }
+            return new String(is.readAllBytes(), StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при чтении фикстуры", e);
+        }
+    }
+
+
+    @BeforeAll
+    public static void beforeAll() throws IOException{
+        server = new MockWebServer();
+        MockResponse response = new MockResponse.Builder()
+                .body(readFixture("index.html"))
+                .build();
+        server.enqueue(response);
+        server.start();
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        server.close();
+    }
 
     @BeforeEach
     public final void setUp() throws IOException, SQLException {
@@ -78,6 +115,30 @@ public class AppTest {
             assertThat(response.code()).isEqualTo(200);
             var urlFromRepo = UrlRepository.find(url);
             assertThat(urlFromRepo).isEmpty();
+        });
+    }
+
+    @Test
+    public  void testCreateUrlCheck() {
+        String url = server.url("/").toString().replaceAll("/$", "");
+        System.out.println(url);
+        JavalinTest.test(app, (server, client) -> {
+            var requestBody = "url=" + url;
+            assertThat(client.post("/urls", requestBody).code()).isEqualTo(200);
+
+            var urlFromRepo = UrlRepository.find(url).orElse(null);
+            assertThat(urlFromRepo).isNotNull();
+
+            client.post("/urls/" + urlFromRepo.getId() + "/checks");
+            assertThat(client.get("/urls/" + urlFromRepo.getId()).code()).isEqualTo(200);
+
+            UrlCheck urlCheckFromRepo = UrlCheckRepository.findLastChecks()
+                    .get(urlFromRepo.getId());
+            assertThat(urlCheckFromRepo).isNotNull();
+            assertThat(urlCheckFromRepo.getStatusCode()).isEqualTo(200);
+            assertThat(urlCheckFromRepo.getTitle()).isEqualTo("Example Page");
+            assertThat(urlCheckFromRepo.getDescription()).isEqualTo("test page for education project");
+            assertThat(urlCheckFromRepo.getH1()).isEqualTo("Example heading 1");
         });
     }
 }
