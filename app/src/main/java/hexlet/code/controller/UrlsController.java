@@ -6,6 +6,7 @@ import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.http.Context;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.HttpResponse;
@@ -32,7 +33,7 @@ public class UrlsController {
         } catch (Exception e) {
             ctx.sessionAttribute("flash", "Некорректный URL");
             ctx.sessionAttribute("flash-type", "danger");
-            ctx.redirect("/");
+            ctx.redirect(NamedRoutes.rootPath());
             return;
         }
         String parsedUrl = String.format("%s://%s%s",
@@ -46,11 +47,11 @@ public class UrlsController {
             UrlRepository.save(newUrl);
             ctx.sessionAttribute("flash", "Страница успешно добавлена");
             ctx.sessionAttribute("flash-type", "success");
-            ctx.redirect("/urls");
+            ctx.redirect(NamedRoutes.urlsPath());
         } else {
             ctx.sessionAttribute("flash", "Страница уже существует");
             ctx.sessionAttribute("flash-type", "info");
-            ctx.redirect("/");
+            ctx.redirect(NamedRoutes.rootPath());
         }
     }
 
@@ -93,11 +94,11 @@ public class UrlsController {
             UrlCheckRepository.save(urlCheck);
             ctx.sessionAttribute("flash", "Страница успешно проверена");
             ctx.sessionAttribute("flash-type", "success");
-            ctx.redirect("/urls/" + id);
+            ctx.redirect(NamedRoutes.urlPath(id));
         } catch (Exception e) {
             ctx.sessionAttribute("flash", "Некорректный адрес");
             ctx.sessionAttribute("flash-type", "danger");
-            ctx.redirect("/urls/" + id);
+            ctx.redirect(NamedRoutes.urlPath(id));
         }
     }
 }

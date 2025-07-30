@@ -1,4 +1,5 @@
 @import hexlet.code.dto.UrlsPage
+@import hexlet.code.util.NamedRoutes
 
 @param UrlsPage page
 
@@ -24,7 +25,7 @@
                                 ${url.getId()}
                             </td>
                             <td>
-                                <a href="/urls/${url.getId()}">${url.getName()}</a>
+                                <a href="${NamedRoutes.urlPath(url.getId())}">${url.getName()}</a>
                             </td>
                             <td>
                                 @if(page.getLastChecks().containsKey(url.getId()))
