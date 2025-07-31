@@ -3,7 +3,6 @@ package hexlet.code.util;
 import hexlet.code.model.Url;
 import hexlet.code.model.UrlCheck;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtils {
