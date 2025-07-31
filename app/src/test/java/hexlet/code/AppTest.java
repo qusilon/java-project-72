@@ -40,7 +40,7 @@ public class AppTest {
 
 
     @BeforeAll
-    public static void beforeAll() throws IOException {
+    static void beforeAll() throws IOException {
         mockServer = new MockWebServer();
         MockResponse response = new MockResponse.Builder()
                 .body(readFixture("index.html"))
@@ -50,17 +50,17 @@ public class AppTest {
     }
 
     @AfterAll
-    public static void afterAll() {
+    static void afterAll() {
         mockServer.close();
     }
 
     @BeforeEach
-    public final void setUp() throws IOException, SQLException {
+    final void setUp() throws IOException, SQLException {
         app = App.getApp();
     }
 
     @Test
-    public void testMainPage() {
+    void testMainPage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get(NamedRoutes.rootPath());
             assertThat(response.code()).isEqualTo(200);
@@ -69,7 +69,7 @@ public class AppTest {
     }
 
     @Test
-    public void testIndexPage() {
+    void testIndexPage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get(NamedRoutes.urlsPath());
             assertThat(response.code()).isEqualTo(200);
@@ -77,7 +77,7 @@ public class AppTest {
     }
 
     @Test
-    public void testUrlsPage() {
+    void testUrlsPage() {
         JavalinTest.test(app, (server, client) -> {
             var url = new Url("https://www.example.com");
             UrlRepository.save(url);
@@ -87,7 +87,7 @@ public class AppTest {
     }
 
     @Test
-    void testUrlNotFound() throws Exception {
+    void testUrlNotFound() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get(NamedRoutes.urlPath(9999L));
             assertThat(response.code()).isEqualTo(404);
@@ -95,7 +95,7 @@ public class AppTest {
     }
 
     @Test
-    public void testCreateUrl() {
+    void testCreateUrl() {
         var url = "https://www.example.com";
         JavalinTest.test(app, (server, client) -> {
             var requestBody = "url=" + url;
@@ -108,7 +108,7 @@ public class AppTest {
     }
 
     @Test
-    public void testCreateInvalidUrl() {
+    void testCreateInvalidUrl() {
         var url = "asd";
         JavalinTest.test(app, (server, client) -> {
             var requestBody = "url=" + url;
@@ -120,7 +120,7 @@ public class AppTest {
     }
 
     @Test
-    public void testCreateUrlCheck() {
+    void testCreateUrlCheck() {
         String url = mockServer.url("/").toString().replaceAll("/$", "");
         System.out.println(url);
         JavalinTest.test(app, (server, client) -> {

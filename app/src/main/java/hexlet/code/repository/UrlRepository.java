@@ -1,6 +1,7 @@
 package hexlet.code.repository;
 
 import hexlet.code.model.Url;
+import hexlet.code.util.Constants;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,7 +38,7 @@ public class UrlRepository extends BaseRepository {
             var resultSet = stmt.executeQuery();
             if (resultSet.next()) {
                 var name = resultSet.getString("name");
-                var createdAt = resultSet.getTimestamp("created_at");
+                var createdAt = resultSet.getTimestamp(Constants.CREATED_AT);
                 var url = new Url(name);
                 url.setId(id);
                 url.setCreatedAt(createdAt);
@@ -55,7 +56,7 @@ public class UrlRepository extends BaseRepository {
             var resultSet = stmt.executeQuery();
             if (resultSet.next()) {
                 var id = resultSet.getLong("id");
-                var createdAt = resultSet.getTimestamp("created_at");
+                var createdAt = resultSet.getTimestamp(Constants.CREATED_AT);
                 var url = new Url(name);
                 url.setId(id);
                 url.setCreatedAt(createdAt);
@@ -74,7 +75,7 @@ public class UrlRepository extends BaseRepository {
             while (resultSet.next()) {
                 var id = resultSet.getLong("id");
                 var name = resultSet.getString("name");
-                var createdAt = resultSet.getTimestamp("created_at");
+                var createdAt = resultSet.getTimestamp(Constants.CREATED_AT);
                 var url = new Url(name);
                 url.setId(id);
                 url.setCreatedAt(createdAt);
